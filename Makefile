@@ -1,11 +1,15 @@
-CC:=gcc
-AR=ar
-CFLAGS=-Wall -fPIC -c
+CC?=gcc
+AR?=ar
+SYMLINK?=ln -sf
 
-PROG:=arithmetique
-LOBJ=addition.o soustraction.o division.o multiplication.o
+CFLAGS?=-Wall -fPIC -c
+
+
+PROG?=arithmetique
+LOBJ:=addition.o soustraction.o division.o multiplication.o
 
 #Bibliothèques
+
 LINKERNAME=$(PROG)_library
 LINKERFILENAME=lib$(LINKERNAME).so
 SONAME=$(LINKERFILENAME)$(LIBMAJOR)
@@ -13,8 +17,8 @@ REALNAME=$(SONAME)$(LIBMINOR)$(LIBPATCH)
 
 LIBSTATIC=lib$(LINKERNAME).a
 
-LIBMINOR=.0
 LIBMAJOR=.1
+LIBMINOR=.0
 LIBPATCH=.0
 
 
@@ -25,27 +29,27 @@ $(PROG): $(LIBSTATIC) $(REALNAME) main.o
 	LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ./$(PROG)
 
 main.o: main.c
-	$(CC) $(CFLAGS) main.c
+	$(CC) $(CFLAGS) $^
 
 addition.o: addition.c
-	$(CC) $(CFLAGS) addition.c
+	$(CC) $(CFLAGS) $^
 
 soustraction.o: soustraction.c
-	$(CC) $(CFLAGS) soustraction.c
+	$(CC) $(CFLAGS) $^
 
 multiplication.o: multiplication.c
-	$(CC) $(CFLAGS) multiplication.c
+	$(CC) $(CFLAGS) $^ 
 
 division.o: division.c
-	$(CC) $(CFLAGS) division.c
+	$(CC) $(CFLAGS) $^
 
 $(LIBSTATIC): $(LOBJ)
-	$(AR) rcs $(LIBSTATIC) $(LOBJ)
+	$(AR) rcs $(LIBSTATIC) $^
 
 $(REALNAME): $(LOBJ)
-	$(CC) -shared -fPIC -Wl,-soname,$(SONAME) -o $(REALNAME) 		$(LOBJ) -lc
-	ln -sf $(REALNAME) $(SONAME)
-	ln -sf $(REALNAME) $(LINKERFILENAME)
+	$(CC) -shared -fPIC -Wl,-soname,$(SONAME) -o $(REALNAME) 		$^ -lc
+	$(SYMLINK) $(REALNAME) $(SONAME)
+	$(SYMLINK) $(REALNAME) $(LINKERFILENAME)
 
 
 libs:$(LIBSTATIC) $(REALNAME)
