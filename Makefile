@@ -3,8 +3,9 @@ AR?=ar
 SYMLINK?=ln -sf
 
 override CFLAGS+=-Wall -fPIC
-LDFLAGS?=-L.
-LIBCFLAGS=-shared -fPIC
+override LDFLAGS+=-L.
+override LIBCFLAGS+=-shared -fPIC
+LDLIBS = -lc
 
 PROG?=arithmetique
 LOBJ:=addition.o soustraction.o division.o multiplication.o
@@ -18,9 +19,9 @@ REALNAME=$(SONAME)$(LIBMINOR)$(LIBPATCH)
 
 LIBSTATIC=lib$(LINKERNAME).a
 
-LIBMAJOR=.1
-LIBMINOR=.0
-LIBPATCH=.0
+LIBMAJOR:=.1
+LIBMINOR:=.0
+LIBPATCH:=.0
 
 
 
@@ -37,7 +38,7 @@ $(LIBSTATIC):$(LIBSTATIC)($(LOBJ))
 $(LIBSTATIC): $(LOBJ)
 
 $(REALNAME): $(LOBJ)
-	$(CC) $(LIBCFLAGS) -Wl,-soname,$(SONAME) -o $@ $^ -lc
+	$(CC) $(LIBCFLAGS) -Wl,-soname,$(SONAME) -o $@ $^ $(LDLIBS)
 	$(SYMLINK) $@ $(SONAME)
 	$(SYMLINK) $@ $(LINKERFILENAME)
 
