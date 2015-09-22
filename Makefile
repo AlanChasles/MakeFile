@@ -2,17 +2,18 @@ CC?=gcc
 AR?=ar
 SYMLINK?=ln -sf
 
-CFLAGS?=-Wall -fPIC
+override CFLAGS+=-Wall -fPIC
 LDFLAGS?=-L.
+LIBCFLAGS=-shared -fPIC
 
 PROG?=arithmetique
 LOBJ:=addition.o soustraction.o division.o multiplication.o
 
 #Bibliothèques
 
-LINKERNAME=$(PROG)_library
-LINKERFILENAME=lib$(LINKERNAME).so
-SONAME=$(LINKERFILENAME)$(LIBMAJOR)
+LINKERNAME:=$(PROG)_library
+LINKERFILENAME:=lib$(LINKERNAME).so
+SONAME:=$(LINKERFILENAME)$(LIBMAJOR)
 REALNAME=$(SONAME)$(LIBMINOR)$(LIBPATCH)
 
 LIBSTATIC=lib$(LINKERNAME).a
@@ -31,14 +32,12 @@ $(PROG): main.o $(LIBSTATIC) $(REALNAME)
 	
 compilObj: $(LOBJ)
 
+$(LIBSTATIC):$(LIBSTATIC)($(LOBJ))
 
 $(LIBSTATIC): $(LOBJ)
-	$(AR) rcs $@ $^
-
-$(REALNAME): CFLAGS=-shared -fPIC
 
 $(REALNAME): $(LOBJ)
-	$(CC) $(CFLAGS) -Wl,-soname,$(SONAME) -o $@ $^ -lc
+	$(CC) $(LIBCFLAGS) -Wl,-soname,$(SONAME) -o $@ $^ -lc
 	$(SYMLINK) $@ $(SONAME)
 	$(SYMLINK) $@ $(LINKERFILENAME)
 
