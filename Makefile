@@ -23,9 +23,9 @@ LIBPATCH=.0
 
 
 
-$(PROG): $(LIBSTATIC) $(REALNAME) main.o
-	$(CC) -o $@.static main.o $(LDFLAGS) -l:$(LIBSTATIC)
-	$(CC) -o $@ main.o $(LDFLAGS) -l$(LINKERNAME)
+$(PROG): main.o $(LIBSTATIC) $(REALNAME) 
+	$(CC) -o $@.static $< $(LDFLAGS) -l:$(LIBSTATIC)
+	$(CC) -o $@ $< $(LDFLAGS) -l$(LINKERNAME)
 	LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ./$@
 
 	
